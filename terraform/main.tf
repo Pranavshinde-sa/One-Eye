@@ -31,3 +31,8 @@ module "ec2" {
   instance_profile_name = module.iam.instance_profile_name
   ssh_public_key        = var.ssh_public_key
 }
+
+module "ecr" {
+  source = "./modules/ecr"
+  name   = var.project_name
+}
