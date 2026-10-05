@@ -1,0 +1,87 @@
+# ==============================
+# Terraform
+# ==============================
+
+# Terraform working directory
+**/.terraform/
+
+# Terraform state
+*.tfstate
+*.tfstate.*
+
+# Terraform plan files
+*.tfplan
+*.plan
+
+# Terraform crash logs
+crash.log
+crash.*.log
+
+
+# ==============================
+# Terraform Variables
+# ==============================
+
+# May contain IPs, keys, secrets, etc.
+*.tfvars
+*.tfvars.json
+
+# Allow example variable files
+!terraform.tfvars.example
+
+
+# ==============================
+# Secrets / Credentials
+# ==============================
+
+.env
+.env.*
+!.env.example
+
+.aws/
+credentials
+credentials.*
+
+# Private keys
+*.pem
+*.key
+*.p12
+*.pfx
+
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+
+
+# ==============================
+# SSH
+# ==============================
+
+*.pub
+
+
+# ==============================
+# IDE / Editor
+# ==============================
+
+.vscode/
+.idea/
+
+*.swp
+*.swo
+
+
+# ==============================
+# OS Files
+# ==============================
+
+.DS_Store
+Thumbs.db
+
+
+# ==============================
+# Logs
+# ==============================
+
+*.log
