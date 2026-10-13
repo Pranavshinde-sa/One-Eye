@@ -12,20 +12,11 @@ provider "aws" {
   region = var.region
 }
 
-data "aws_caller_identity" "current" {}
 
-locals {
-  bucket_name = "one-eye-tfstate-${data.aws_caller_identity.current.account_id}"
-}
-
-# Bucket that stores the Terraform state of the main infrastructure
 resource "aws_s3_bucket" "state" {
-  bucket = local.bucket_name
-
-  lifecycle {
-    prevent_destroy = true
-  }
+  bucket = var.bucket_name
 }
+
 
 resource "aws_s3_bucket_versioning" "state" {
   bucket = aws_s3_bucket.state.id
