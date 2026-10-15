@@ -1,0 +1,85 @@
+---
+- name: Install K3s
+  hosts: k3s_server
+  become: true 
+  gather_facts: true
+  
+  tasks:
+    - name: Update Cache
+      apt:
+        update_cache: true
+    
+    - name: Install Curl
+      apt:
+        name: curl
+        state: present
+
+    - name: Install aws CLI
+      apt:
+        name: awscli
+        state: present 
+
+    - name: Install K3
+      shell: curl -sfL https://get.k3s.io | sh -
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: Check K3s is running
+      systemd:
+        name: k3s
+        state: started
+        enabled: true
+
+    - name: Wait for kubernetes API
+      wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: 6443
+        state: started 
+        timeout: 180
+
+    - name: Retrive the k3s token
+      command:
+        argv:
+          - cat
+          - /var/lib/rancher/k3s/server/node-token
+
+      register: k3s_join_token
+      changed_when: false
+      no_log: true
+
+- name: Configure workers
+  hosts: k3s_agents
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Update Cache 
+      apt:
+        update_cache: true
+
+    - name: Install Curl
+      apt:
+        name: curl
+        state: present
+
+    - name: Install aws CLI
+      apt:
+        name: awscli
+        state: present 
+
+    - name: Install k3s in worker node
+      shell: curl -sfL https://get.k3s.io | sh -
+      environment: 
+        K3S_URL: "https://{{ hostvars[groups['k3s_server'][0]]['ansible_default_ipv4']['address'] }}:6443"
+        K3S_TOKEN: "{{ hostvars[groups['k3s_server'][0]]['k3s_join_token']['stdout'] | trim }}"
+      args:
+        creates: /usr/local/bin/k3s
+      no_log: true
+
+    - name: Ensure K3s agent is running
+      systemd_service:
+        name: k3s-agent
+        state: started
+        enabled: true
+
+
